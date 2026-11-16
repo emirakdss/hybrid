@@ -95,3 +95,65 @@ dialog::backdrop { background: rgba(20, 20, 19, .45); }
 .segment button[aria-pressed="true"] { background: var(--ink); color: var(--bg); font-weight: 600; }
 
 :focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+/* ---------- Faz 2-6: satırlar, formlar, listeler ---------- */
+.head-btns { display: flex; }
+.esnek { flex: 1; min-width: 0; }
+.normal { font-weight: 400; }
+.soluk { color: var(--muted); }
+.muted b { color: var(--ink); font-weight: 600; }
+.satir-ara { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.ikili { display: flex; gap: 8px; }
+.ikili > * { flex: 1; min-width: 0; }
+.ikili > .dar-alan { flex: 0 0 132px; }
+
+.chk { width: 44px; height: 44px; border: 0; background: transparent; padding: 0; flex: none; display: flex; align-items: center; justify-content: center; }
+.chk span { width: 26px; height: 26px; border-radius: 8px; border: 1.5px solid var(--muted); display: flex; align-items: center; justify-content: center; }
+.chk[aria-pressed="true"] span { background: var(--brand); border-color: var(--brand); color: var(--check); }
+.chk svg { width: 16px; height: 16px; stroke-width: 3; }
+
+.satir { display: flex; align-items: center; gap: 4px; padding: 6px 8px 6px 6px; min-height: 56px; }
+.satir.bosluklu { padding-left: 16px; }
+.satir + .satir { border-top: 1px solid var(--line); }
+.satir-govde { flex: 1; min-width: 0; border: 0; background: transparent; text-align: left; padding: 4px 0; display: flex; flex-direction: column; color: inherit; }
+.satir-ad { font-weight: 600; }
+.satir-metin { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.satir-sag { flex: none; padding: 0 8px 0 4px; }
+.tamam { color: var(--muted); text-decoration: line-through; }
+.etiket { font-size: 13px; line-height: 18px; font-weight: 600; color: var(--ink); border: 1px solid var(--brand); border-radius: var(--r-sm); padding: 0 6px; white-space: nowrap; }
+.btn svg { width: 20px; height: 20px; }
+.btn.dar { width: auto; flex: none; min-height: 44px; margin-right: 4px; }
+
+.ozet { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.buyuk { display: flex; align-items: baseline; gap: 6px; }
+.buyuk strong { font-size: 28px; line-height: 34px; font-weight: 600; }
+.cubuk { height: 6px; border-radius: 3px; background: var(--line); }
+.cubuk div { height: 6px; border-radius: 3px; background: var(--brand); }
+
+input, select, textarea {
+  font: inherit; color: var(--ink); background: var(--card); border: 1px solid var(--line);
+  border-radius: var(--r-md); min-height: 48px; padding: 0 12px; width: 100%; min-width: 0;
+}
+textarea { padding: 10px 12px; resize: vertical; }
+.alan { display: flex; flex-direction: column; gap: 4px; }
+.alan > span { font-size: 15px; line-height: 22px; color: var(--muted); }
+.ekle { display: flex; gap: 8px; }
+.icon-btn.kare { width: 48px; height: 48px; flex: none; border: 1px solid var(--line); }
+.gezgin { display: flex; align-items: center; justify-content: space-between; }
+
+/* Sayfa (alttan açılan) içerikleri */
+dialog { overflow-y: auto; }
+.liste { display: flex; flex-direction: column; background: var(--card); border-radius: var(--r-md); max-height: 44vh; overflow-y: auto; }
+.liste-satir { border: 0; background: transparent; text-align: left; color: inherit; padding: 10px 14px; min-height: 48px; display: flex; flex-direction: column; justify-content: center; }
+.liste-satir + .liste-satir { border-top: 1px solid var(--line); }
+.cipler { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+.cip { flex: none; min-height: 44px; padding: 0 16px; border-radius: 22px; border: 1px solid var(--line); background: transparent; color: var(--ink); }
+.cip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--bg); font-weight: 600; }
+.kutu { background: var(--card); border-radius: var(--r-md); padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 6px; }
+.kutu .satir-ara { align-items: center; }
+.uclu { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.uclu label { display: flex; flex-direction: column; gap: 4px; font-size: 15px; line-height: 22px; color: var(--muted); }
+.uclu input, .kutu input { background: var(--bg); }
+.kalem { display: flex; align-items: center; gap: 8px; }
+.kalem input { width: 88px; flex: none; text-align: right; }
+.tur { display: grid; grid-template-columns: 1.3fr 1fr 1fr 44px; gap: 6px; align-items: center; }

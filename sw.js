@@ -1,6 +1,8 @@
 // Çevrimdışı çalışma: önce ağ denenir (güncel sürüm gelsin), ağ yoksa önbellekteki kopya kullanılır.
-const ONBELLEK = 'planlayici-v1';
-const KABUK = ['./', './index.html', './css/app.css', './js/app.js', './js/db.js',
+const ONBELLEK = 'planlayici-v2';
+const KABUK = ['./', './index.html', './css/app.css', './js/app.js', './js/db.js', './js/util.js', './js/ui.js', './js/veri.js',
+  './js/gun.js', './js/plan.js', './js/antrenman.js', './js/beslenme.js', './js/ics.js',
+  './js/data-besinler.js', './js/data-hareketler.js',
   './manifest.webmanifest', './icons/icon-180.png', './icons/icon-192.png', './icons/icon-512.png'];
 
 self.addEventListener('install', (e) => {

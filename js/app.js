@@ -1,61 +1,58 @@
 import * as db from './db.js';
+import { bugun, haftaBasi, ayBasi } from './util.js';
+import * as gun from './gun.js';
+import * as antrenman from './antrenman.js';
+import * as beslenme from './beslenme.js';
+import * as plan from './plan.js';
 
-const SURUM = '0.1.0';
+const SURUM = '0.2.0';
 const YEDEK_BICIM = 1;
 const $ = (s, kok = document) => kok.querySelector(s);
 
 /* ---------- Ekranlar ---------- */
-const bugunTarih = () =>
-  new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', weekday: 'long' }).format(new Date());
+// Her ekran modülü ciz(S) (HTML döndürür) ve acts (data-act / data-form işleyicileri) verir.
+const EKRANLAR = { bugun: gun, antrenman, beslenme, plan };
+const b0 = bugun();
+const S = { sekme: 'bugun', gun: b0, besGun: b0, planGun: b0, planHafta: haftaBasi(b0), planAy: ayBasi(b0) };
 
-const AYAR_DUGMESI = `
-  <button class="icon-btn" data-ayarlar aria-label="Ayarlar">
-    <svg aria-hidden="true" viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="9" cy="7" r="2.2" fill="var(--bg)"/><circle cx="15" cy="12" r="2.2" fill="var(--bg)"/><circle cx="8" cy="17" r="2.2" fill="var(--bg)"/></svg>
-  </button>`;
-
-const baslik = (ad, ust = '') => `
-  <header class="head">
-    <div class="head-text">${ust ? `<span class="muted">${ust}</span>` : ''}<h1>${ad}</h1></div>
-    ${AYAR_DUGMESI}
-  </header>`;
-
-const bolum = (ad, bosMetin) => `
-  <section class="section">
-    <div class="section-head"><h2>${ad}</h2></div>
-    <div class="card"><p class="empty">${bosMetin}</p></div>
-  </section>`;
-
-const EKRANLAR = {
-  bugun: () => baslik('Bugün', bugunTarih()) +
-    bolum('Öğünler', 'Bugün için öğün planlanmadı.') +
-    bolum('Antrenman', 'Bugün için antrenman planlanmadı.') +
-    bolum('Yapılacaklar', 'Bugün için yapılacak yok.') +
-    `<button class="btn btn-solid" disabled>Yarını planla</button>`,
-  antrenman: () => baslik('Antrenman') +
-    bolum('Programlar', 'Henüz program yok. Bu bölüm Faz 3 ile gelecek.') +
-    bolum('Koşu ve kardiyo', 'Henüz kayıt yok. Bu bölüm Faz 5 ile gelecek.'),
-  beslenme: () => baslik('Beslenme') +
-    bolum('Öğün planı', 'Henüz plan yok. Bu bölüm Faz 4 ile gelecek.'),
-  plan: () => baslik('Plan') +
-    bolum('Günlük', 'Henüz madde yok. Bu bölüm Faz 2 ile gelecek.') +
-    bolum('Haftalık', 'Henüz madde yok.') +
-    bolum('Aylık', 'Henüz madde yok.'),
-};
-
-function goster(sekme) {
-  if (!EKRANLAR[sekme]) sekme = 'bugun';
-  $('#view').innerHTML = EKRANLAR[sekme]();
+async function goster(sekme) {
+  const degisti = sekme !== undefined;
+  if (degisti) S.sekme = EKRANLAR[sekme] ? sekme : 'bugun';
+  const y = window.scrollY;
+  $('#view').innerHTML = await EKRANLAR[S.sekme].ciz(S);
   for (const t of document.querySelectorAll('.tab')) {
-    if (t.dataset.tab === sekme) t.setAttribute('aria-current', 'page');
+    if (t.dataset.tab === S.sekme) t.setAttribute('aria-current', 'page');
     else t.removeAttribute('aria-current');
   }
-  window.scrollTo(0, 0);
+  window.scrollTo(0, degisti || S.basaDon ? 0 : y);
+  S.basaDon = false;
 }
+
+async function calistir(ad, el) {
+  const f = EKRANLAR[S.sekme].acts[ad];
+  if (!f) return;
+  try {
+    if ((await f(el, S)) !== false) await goster();
+  } catch (e) {
+    console.error(e);
+    alert('Bir şey ters gitti: ' + e.message);
+  }
+}
+document.addEventListener('click', (e) => {
+  const el = e.target.closest('[data-act]');
+  if (el && !el.closest('dialog')) calistir(el.dataset.act, el);
+});
+document.addEventListener('submit', (e) => {
+  const f = e.target.closest('[data-form]');
+  if (f) { e.preventDefault(); calistir(f.dataset.form, f); }
+});
 
 window.addEventListener('hashchange', () => goster(location.hash.slice(1)));
 $('.tabs').addEventListener('click', (e) => {
   const t = e.target.closest('.tab');
-  if (t) location.hash = t.dataset.tab;
+  if (!t) return;
+  if (location.hash.slice(1) === t.dataset.tab || (!location.hash && t.dataset.tab === 'bugun')) goster(t.dataset.tab);
+  else location.hash = t.dataset.tab;
 });
 
 /* ---------- Tema ---------- */
@@ -127,7 +124,7 @@ $('#yedek-dosya').addEventListener('change', async (e) => {
     const tema = yedek.veri['ayar:tema'] || 'auto';
     try { localStorage.setItem('tema', tema); } catch (err) {}
     temaUygula(tema);
-    goster(location.hash.slice(1));
+    await goster();
     durum('Yedek geri yüklendi.');
   } catch (err) {
     durum('Geri yüklenemedi: ' + err.message);
@@ -137,7 +134,7 @@ $('#yedek-dosya').addEventListener('change', async (e) => {
 /* ---------- Başlangıç ---------- */
 $('#surum').textContent = 'Sürüm ' + SURUM;
 temaUygula(document.documentElement.dataset.theme || 'auto');
-goster(location.hash.slice(1));
+goster(location.hash.slice(1) || 'bugun');
 
 // Tarayıcıdan verileri kendiliğinden silmemesini iste (garanti değildir; yedek almak yine gerekli).
 if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});

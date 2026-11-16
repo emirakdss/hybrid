@@ -5,13 +5,14 @@ import * as antrenman from './antrenman.js';
 import * as beslenme from './beslenme.js';
 import * as plan from './plan.js';
 
-const SURUM = '0.3.0';
+const SURUM = '0.4.0';
 const YEDEK_BICIM = 1;
 const $ = (s, kok = document) => kok.querySelector(s);
 
 /* ---------- Ekranlar ---------- */
 // Her ekran modülü ciz(S) (HTML döndürür) ve acts (data-act / data-form işleyicileri) verir.
 const EKRANLAR = { bugun: gun, antrenman, beslenme, plan };
+const HERO_RENK = { bugun: '#F2622E', beslenme: '#F2622E', antrenman: '#1FA35B', plan: '#4D82FF' };
 const b0 = bugun();
 const S = { sekme: 'bugun', gun: b0, besGun: b0, planGun: b0, planHafta: haftaBasi(b0), planAy: ayBasi(b0) };
 
@@ -25,14 +26,20 @@ async function goster(sekme) {
     else t.removeAttribute('aria-current');
   }
   window.scrollTo(0, degisti || S.basaDon ? 0 : y);
+  // Sekme ya da gün değişince içerik canlanarak gelir; aynı ekrandaki küçük güncellemelerde tekrar oynamaz.
+  if (degisti || S.basaDon) { const v = $('#view'); v.classList.remove('giris'); void v.offsetWidth; v.classList.add('giris'); }
   S.basaDon = false;
+  $('#theme-color').content = HERO_RENK[S.sekme];
 }
 
 async function calistir(ad, el) {
   const f = EKRANLAR[S.sekme].acts[ad];
   if (!f) return;
   try {
-    if ((await f(el, S)) !== false) await goster();
+    if ((await f(el, S)) === false) return;
+    await goster();
+    // Az önce işaretlenen kutu küçük bir sıçramayla canlanır.
+    if (/-tik$/.test(ad)) { const k = document.querySelector(`.chk[data-id="${el.dataset.id}"][aria-pressed="true"]`); if (k) k.classList.add('pop'); }
   } catch (e) {
     console.error(e);
     alert('Bir şey ters gitti: ' + e.message);
@@ -60,8 +67,6 @@ const koyuMu = matchMedia('(prefers-color-scheme: dark)');
 
 function temaUygula(tema) {
   document.documentElement.dataset.theme = tema;
-  const koyu = tema === 'dark' || (tema === 'auto' && koyuMu.matches);
-  $('#theme-color').content = koyu ? '#1F1E1B' : '#F4F3EE';
   for (const b of document.querySelectorAll('[data-tema]')) {
     b.setAttribute('aria-pressed', String(b.dataset.tema === tema));
   }

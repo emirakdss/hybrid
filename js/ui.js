@@ -6,6 +6,7 @@ export const IKON = {
   arti: '<svg aria-hidden="true" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
   sol: '<svg aria-hidden="true" viewBox="0 0 24 24"><polyline points="15 5 8 12 15 19"/></svg>',
   sag: '<svg aria-hidden="true" viewBox="0 0 24 24"><polyline points="9 5 16 12 9 19"/></svg>',
+  alev: '<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-1.8.8-3 1.8-4 .4 1.6 1.2 2.3 2 2.5C10.300 9 11 6 12 3z"/></svg>',
   tik: '<svg aria-hidden="true" viewBox="0 0 24 24"><polyline points="5 12.5 10 17.5 19 7.5"/></svg>',
 };
 
@@ -82,11 +83,16 @@ export async function dosyaVer(dosya) {
 
 // Ekran başlığı: üstte küçük açıklama, altında başlık, sağda düğmeler ve Ayarlar.
 const AYAR = '<button class="icon-btn" data-ayarlar aria-label="Ayarlar"><svg aria-hidden="true" viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="9" cy="7" r="2.2" fill="var(--bg)"/><circle cx="15" cy="12" r="2.2" fill="var(--bg)"/><circle cx="8" cy="17" r="2.2" fill="var(--bg)"/></svg></button>';
-export const baslik = (ad, ust = '', dugmeler = '') => `
-  <header class="head">
-    <div class="head-text">${ust ? `<span class="muted">${esc(ust)}</span>` : ''}<h1>${esc(ad)}</h1></div>
-    <div class="head-btns">${dugmeler}${AYAR}</div>
-  </header>`;
+export const baslik = (ad, ust = '', dugmeler = '', o = {}) => `
+  <div class="hero" data-renk="${o.renk || 'b'}">
+    <header class="head">
+      <div class="head-text">${ust ? `<span class="muted">${esc(ust)}</span>` : ''}<h1>${esc(ad)}</h1></div>
+      <div class="head-btns">${dugmeler}${AYAR}</div>
+    </header>
+    ${o.ek || ''}
+  </div>`;
+// Küçük ilerleme çubuğu (0-1 arası oran)
+export const cubuk = (oran, etiket) => `<div class="cubuk" role="img" aria-label="${esc(etiket)}"><div style="width:${Math.round(Math.min(1, Math.max(0, oran || 0)) * 100)}%"></div></div>`;
 // Önceki / sonraki düğmeleri
 export const okDugme = (act, yon, etiket, ek = '') =>
   `<button class="icon-btn" data-act="${act}" ${ek} aria-label="${esc(etiket)}">${yon < 0 ? IKON.sol : IKON.sag}</button>`;

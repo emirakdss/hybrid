@@ -1,6 +1,6 @@
 // Yapılacaklar: günlük, haftalık ve aylık üç ayrı liste.
 import { esc, uid, bugun, gunEkle, haftaBasi, ayBasi, ayEkle, fmtGun, fmtHafta, fmtAy } from './util.js';
-import { IKON, chk, baslik, okDugme } from './ui.js';
+import { IKON, chk, baslik, okDugme, cubuk } from './ui.js';
 import { liste, listeYaz } from './veri.js';
 
 // Bir kapsam + dönem için liste bölümü. Bugün ekranı da bunu kullanır.
@@ -47,7 +47,13 @@ const gezgin = (k, etiket) => `<div class="gezgin">${okDugme('plan-git', -1, 'Ö
 
 export async function ciz(s) {
   const l = await liste('yapilacak');
-  return baslik('Plan') +
+  const b = bugun();
+  const ist = (ad, kapsam, t) => {
+    const m = l.filter((x) => x.kapsam === kapsam && x.t === t), biten = m.filter((x) => x.tamam).length;
+    return `<div class="ist"><span>${ad}</span><b>${biten} / ${m.length}</b>${cubuk(m.length ? biten / m.length : 0, `${ad}: ${m.length} maddenin ${biten} tanesi tamam`)}</div>`;
+  };
+  const ek = `<div class="istler">${ist('Bugün', 'gun', b)}${ist('Bu hafta', 'hafta', haftaBasi(b))}${ist('Bu ay', 'ay', ayBasi(b))}</div>`;
+  return baslik('Plan', '', '', { renk: 'p', ek }) +
     todoBolum('Günlük', 'gun', s.planGun, l, gezgin('gun', s.planGun === bugun() ? 'Bugün' : fmtGun(s.planGun))) +
     todoBolum('Haftalık', 'hafta', s.planHafta, l, gezgin('hafta', s.planHafta === haftaBasi(bugun()) ? 'Bu hafta' : fmtHafta(s.planHafta))) +
     todoBolum('Aylık', 'ay', s.planAy, l, gezgin('ay', fmtAy(s.planAy)));

@@ -1,7 +1,7 @@
 // Gün ekranı (Bugün sekmesi): kalori özeti, öğünler, antrenman, yapılacaklar.
 // Öğün bölümü Beslenme sekmesinde de kullanılır.
 import { esc, uid, bugun, gunEkle, fmtGun, fmtKisa, sayi, num } from './util.js';
-import { IKON, chk, form, sayfa, sayfaBas, alan, secim, baslik, okDugme, dosyaVer } from './ui.js';
+import { IKON, chk, form, sayfa, sayfaBas, alan, secim, baslik, okDugme, dosyaVer, cubuk } from './ui.js';
 import { gunAl, gunYaz, liste, listeYaz, ayar } from './veri.js';
 import { BESINLER } from './data-besinler.js';
 import { todoBolum, todoActs } from './plan.js';
@@ -21,22 +21,31 @@ export function gunOzet(g) {
   return { plan, yenen };
 }
 
-export function ozetKart(g, hedef) {
-  if (!g.ogunler.length && !g.ekstra.length) return '';
+// Başlık bloğunun içindeki özet: kalori halkası + makro çubukları (makrolar günün planına göre dolar).
+const CEVRE = 2 * Math.PI * 50;
+export function ozetBlok(g, hedef) {
   const { plan, yenen } = gunOzet(g);
   const taban = hedef || plan[0];
-  const oran = taban ? Math.min(100, (yenen[0] / taban) * 100) : 0;
+  const oran = taban ? Math.min(1, yenen[0] / taban) : 0;
+  const m = (ad, i) => `<div class="m"><span>${ad}</span><b>${sayi(yenen[i])}${plan[i] ? ` / ${sayi(plan[i])}` : ''} g</b>${cubuk(plan[i] ? yenen[i] / plan[i] : 0, `${ad}: plandaki ${sayi(plan[i])} gramın ${sayi(yenen[i])} gramı`)}</div>`;
   return `
-  <section class="card ozet">
-    <div class="buyuk"><strong>${sayi(yenen[0])}</strong><span>/ ${sayi(taban)} kcal</span></div>
-    <div class="cubuk" role="img" aria-label="${sayi(taban)} kcal içinden ${sayi(yenen[0])} kcal alındı"><div style="width:${oran}%"></div></div>
-    <div class="makro">
-      <div><b>${sayi(yenen[1])} g</b><span>Protein</span></div>
-      <div><b>${sayi(yenen[2])} g</b><span>Karbonhidrat</span></div>
-      <div><b>${sayi(yenen[3])} g</b><span>Yağ</span></div>
+  <div class="ozet-blok">
+    <div class="halka" role="img" aria-label="${taban ? `${sayi(taban)} kcal içinden ${sayi(yenen[0])} kcal alındı` : `${sayi(yenen[0])} kcal alındı`}">
+      <svg viewBox="0 0 120 120"><circle class="iz" cx="60" cy="60" r="50"/><circle class="dolu" cx="60" cy="60" r="50" transform="rotate(-90 60 60)" style="--o:${(CEVRE * (1 - oran)).toFixed(1)}"/></svg>
+      <div class="halka-ic"><strong>${sayi(yenen[0])}</strong><span>${taban ? `/ ${sayi(taban)} kcal` : 'kcal'}</span></div>
     </div>
-    <p class="muted small">${hedef ? `Hedefe göre · günün planı ${sayi(plan[0])} kcal` : 'Günün planına göre · hedef belirlenmedi'}</p>
-  </section>`;
+    <div class="makrolar">${m('Protein', 1)}${m('Karbonhidrat', 2)}${m('Yağ', 3)}</div>
+  </div>`;
+}
+
+// Seri: art arda kaç gün plana uyuldu (öğün planı var, hepsi yendi, diyet dışı kayıt yok).
+// Bugün henüz tamamlanmadıysa seri dünden geriye sayılır, yani gün bitmeden bozulmuş görünmez.
+const uyuldu = (g) => g.ogunler.length > 0 && g.ogunler.every((o) => o.yendi) && !g.ekstra.length;
+export async function seriHesap() {
+  let t = bugun(), n = 0;
+  if (!uyuldu(await gunAl(t))) t = gunEkle(t, -1);
+  while (n < 365 && uyuldu(await gunAl(t))) { n++; t = gunEkle(t, -1); }
+  return n;
 }
 
 /* ---------- Öğünler ---------- */
@@ -270,9 +279,19 @@ export async function ciz(s) {
   const t = s.gun, b = bugun();
   const g = await gunAl(t);
   const ad = t === b ? 'Bugün' : t === gunEkle(b, 1) ? 'Yarın' : t === gunEkle(b, -1) ? 'Dün' : fmtKisa(t);
-  return baslik(ad, fmtGun(t), okDugme('gun-git', -1, 'Önceki gün', 'data-yon="-1"') + okDugme('gun-git', 1, 'Sonraki gün', 'data-yon="1"')) +
-    ozetKart(g, num(await ayar('hedef'))) + ogunBolum(t, g) + antBolum(t, g) +
-    todoBolum('Yapılacaklar', 'gun', t, await liste('yapilacak')) +
+  const todolar = await liste('yapilacak');
+  // Günün ilerlemesi: işaretlenen öğün + antrenman + yapılacak / hepsi
+  const isler = [...g.ogunler.map((o) => o.yendi), ...g.antrenman.map((a) => a.yapildi), ...todolar.filter((x) => x.kapsam === 'gun' && x.t === t).map((x) => x.tamam)];
+  const biten = isler.filter(Boolean).length;
+  const seri = await seriHesap();
+  const ek = ozetBlok(g, num(await ayar('hedef'))) + `
+    <div class="hero-alt">
+      <span class="rozet">${IKON.alev}${seri ? `Seri <b>${seri} gün</b>` : 'Seri başlamadı'}</span>
+      <div class="gun-il"><span>${isler.length ? `Gün %${Math.round((biten / isler.length) * 100)} tamam · ${biten} / ${isler.length}` : 'Bu gün için plan yok'}</span>${cubuk(isler.length ? biten / isler.length : 0, 'Günün ilerlemesi')}</div>
+    </div>`;
+  return baslik(ad, fmtGun(t), okDugme('gun-git', -1, 'Önceki gün', 'data-yon="-1"') + okDugme('gun-git', 1, 'Sonraki gün', 'data-yon="1"'), { renk: 'b', ek }) +
+    ogunBolum(t, g) + antBolum(t, g) +
+    todoBolum('Yapılacaklar', 'gun', t, todolar) +
     `<section class="section" data-tarih="${t}">
        ${t === b ? '<button class="btn btn-solid" data-act="gun-yarin">Yarını planla</button>' : '<button class="btn btn-solid" data-act="gun-bugun">Bugüne dön</button>'}
        <button class="btn btn-outline" data-act="takvim">Hatırlatmaları takvime aktar</button>

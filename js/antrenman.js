@@ -1,5 +1,5 @@
 // Antrenman: programlar, hareket seçme/oluşturma, antrenman kaydı, koşu ve kardiyo kaydı.
-import { esc, uid, bugun, fmtKisa, sayi, num, sureSn, snMetin, tempo } from './util.js';
+import { esc, uid, bugun, fmtKisa, sayi, num, sureSn, snMetin, tempo, haftaBasi, gunEkle } from './util.js';
 import { IKON, sayfa, sayfaBas, baslik } from './ui.js';
 import { liste, listeYaz, ayar, ayarYaz } from './veri.js';
 import { BOLGELER, HAREKETLER } from './data-hareketler.js';
@@ -203,8 +203,20 @@ export const kosuOzet = (k) => [
 /* ---------- Antrenman sekmesi ---------- */
 export async function ciz() {
   const programlar = await liste('programlar');
-  const kayitlar = (await liste('kayitlar')).sort((a, b) => (a.tarih < b.tarih ? 1 : -1)).slice(0, 30);
-  return baslik('Antrenman') + `
+  const hepsi = await liste('kayitlar');
+  const kayitlar = hepsi.slice().sort((a, b) => (a.tarih < b.tarih ? 1 : -1)).slice(0, 30);
+  // Bu hafta: Pazartesi'den Pazar'a hangi günlerde kayıt var
+  const hb = haftaBasi(bugun());
+  const hafta = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'].map((ad, i) => [ad, gunEkle(hb, i)]);
+  const buHafta = hepsi.filter((k) => k.tarih >= hb && k.tarih <= gunEkle(hb, 6));
+  const km = buHafta.filter((k) => k.tip === 'kosu').reduce((a, k) => a + num(k.km), 0);
+  const ek = `
+    <div class="hafta">${hafta.map(([ad, t]) => {
+      const var_ = buHafta.some((k) => k.tarih === t);
+      return `<div class="gunc${t === bugun() ? ' bugun' : ''}"><span class="nokta${var_ ? ' dolu' : ''}">${var_ ? IKON.tik : ''}</span><span>${ad}</span></div>`;
+    }).join('')}</div>
+    <p class="hero-not">Bu hafta ${buHafta.length} kayıt${km ? ` · ${sayi(km, 1)} km koşu` : ''}</p>`;
+  return baslik('Antrenman', '', '', { renk: 'a', ek }) + `
   <section class="section" data-renk="a">
     <div class="section-head"><h2>Programlar</h2></div>
     <div class="card">${programlar.map((p) => `

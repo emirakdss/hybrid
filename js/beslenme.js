@@ -20,14 +20,14 @@ export async function ciz(s) {
   for (let i = 0; i < 7; i++) { const gt = gunEkle(b, -i); gunler.push([gt, await gunAl(gt)]); }
   return baslik('Beslenme', t === b ? 'Bugün' : fmtGun(t), okDugme('bes-git', -1, 'Önceki gün', 'data-yon="-1"') + okDugme('bes-git', 1, 'Sonraki gün', 'data-yon="1"')) +
     ozetKart(g, hedef) + ogunBolum(t, g) + `
-  <section class="section">
+  <section class="section" data-renk="b">
     <div class="section-head"><h2>Günlük hedef</h2></div>
     <div class="card"><div class="satir bosluklu">
       <div class="satir-govde"><span class="satir-ad">${hedef ? `${sayi(hedef)} kcal` : 'Belirlenmedi'}</span><span class="muted">Kalori çubuğu bu hedefe göre dolar. Hedef yoksa günün planı esas alınır.</span></div>
       <button class="btn btn-outline dar" data-act="hedef">Değiştir</button>
     </div></div>
   </section>
-  <section class="section">
+  <section class="section" data-renk="b">
     <div class="section-head"><h2>Benim besinlerim</h2></div>
     <div class="card">${besinler.map((x, i) => `
       <div class="satir bosluklu"><button class="satir-govde" data-act="besin-ac" data-i="${i}">
@@ -36,7 +36,7 @@ export async function ciz(s) {
       </button></div>`).join('') || '<p class="empty">Hazır listede olmayan ya da paket değeri farklı olan besinleri buraya ekleyebilirsin.</p>'}</div>
     <button class="btn btn-outline" data-act="besin-yeni">${IKON.arti} Besin oluştur</button>
   </section>
-  <section class="section">
+  <section class="section" data-renk="b">
     <div class="section-head"><h2>Son 7 gün</h2></div>
     <div class="card">${gunler.map(([gt, gg]) => {
       const { plan, yenen } = gunOzet(gg);

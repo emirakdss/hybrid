@@ -5,7 +5,7 @@ import * as antrenman from './antrenman.js';
 import * as beslenme from './beslenme.js';
 import * as plan from './plan.js';
 
-const SURUM = '0.2.0';
+const SURUM = '0.3.0';
 const YEDEK_BICIM = 1;
 const $ = (s, kok = document) => kok.querySelector(s);
 

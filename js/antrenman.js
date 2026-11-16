@@ -205,7 +205,7 @@ export async function ciz() {
   const programlar = await liste('programlar');
   const kayitlar = (await liste('kayitlar')).sort((a, b) => (a.tarih < b.tarih ? 1 : -1)).slice(0, 30);
   return baslik('Antrenman') + `
-  <section class="section">
+  <section class="section" data-renk="a">
     <div class="section-head"><h2>Programlar</h2></div>
     <div class="card">${programlar.map((p) => `
       <div class="satir bosluklu">
@@ -214,11 +214,11 @@ export async function ciz() {
       </div>`).join('') || '<p class="empty">Henüz program yok. İlk programını oluştur, hareketlerini ekle.</p>'}</div>
     <button class="btn btn-outline" data-act="prog-yeni">${IKON.arti} Program oluştur</button>
   </section>
-  <section class="section">
+  <section class="section" data-renk="a">
     <div class="section-head"><h2>Koşu ve kardiyo</h2></div>
     <button class="btn btn-outline" data-act="kosu-yeni">${IKON.arti} Koşu / kardiyo kaydı ekle</button>
   </section>
-  <section class="section">
+  <section class="section" data-renk="a">
     <div class="section-head"><h2>Geçmiş</h2></div>
     <div class="card">${kayitlar.map((k) => `
       <div class="satir bosluklu">

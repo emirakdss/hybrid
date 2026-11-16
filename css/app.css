@@ -157,3 +157,81 @@ dialog { overflow-y: auto; }
 .kalem { display: flex; align-items: center; gap: 8px; }
 .kalem input { width: 88px; flex: none; text-align: right; }
 .tur { display: grid; grid-template-columns: 1.3fr 1fr 1fr 44px; gap: 6px; align-items: center; }
+
+/* ---------- Görünüm v0.3: renk kodlu bölümler, kalın tipografi (Emir'in seçtiği "C" yönü) ---------- */
+/* Bölüm renkleri: b = beslenme (kiremit), a = antrenman (yeşil), p = plan (mavi). */
+:root {
+  --yesil: #55683F; --mavi: #3D5A73; --kiremit-koyu: #A64E2E;
+  --ton-b: #F6E3D9; --cizgi-b: #E3C5B6; --ton-a: #E4EADC; --cizgi-a: #C3CFB3; --ton-p: #DDE6EE; --cizgi-p: #B9C9D6;
+  --iz: #E6E2D8;
+}
+:root[data-theme="dark"] {
+  --ton-b: #3B2A22; --cizgi-b: #5A3D30; --ton-a: #2B3324; --cizgi-a: #445038; --ton-p: #232E39; --cizgi-p: #3A4A5A;
+  --iz: #3A3936;
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="auto"] {
+    --ton-b: #3B2A22; --cizgi-b: #5A3D30; --ton-a: #2B3324; --cizgi-a: #445038; --ton-p: #232E39; --cizgi-p: #3A4A5A;
+    --iz: #3A3936;
+  }
+}
+.section[data-renk="b"] { --renk: #C15F3C; --renk-koyu: var(--kiremit-koyu); --ton: var(--ton-b); --cizgi: var(--cizgi-b); --ikon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27white%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27M7%203v8a2.5%202.5%200%200%200%205%200V3%27/%3E%3Cline%20x1%3D%279.5%27%20y1%3D%273%27%20x2%3D%279.5%27%20y2%3D%2721%27/%3E%3Cpath%20d%3D%27M17%2021V3c-2%201.5-3%204-3%207%200%201.5%201%202.5%203%202.5%27/%3E%3C/svg%3E"); }
+.section[data-renk="a"] { --renk: var(--yesil); --renk-koyu: var(--yesil); --ton: var(--ton-a); --cizgi: var(--cizgi-a); --ikon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27white%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cline%20x1%3D%273%27%20y1%3D%2712%27%20x2%3D%2721%27%20y2%3D%2712%27/%3E%3Cline%20x1%3D%276%27%20y1%3D%277%27%20x2%3D%276%27%20y2%3D%2717%27/%3E%3Cline%20x1%3D%2718%27%20y1%3D%277%27%20x2%3D%2718%27%20y2%3D%2717%27/%3E%3Cline%20x1%3D%273.5%27%20y1%3D%279.5%27%20x2%3D%273.5%27%20y2%3D%2714.5%27/%3E%3Cline%20x1%3D%2720.5%27%20y1%3D%279.5%27%20x2%3D%2720.5%27%20y2%3D%2714.5%27/%3E%3C/svg%3E"); }
+.section[data-renk="p"] { --renk: var(--mavi); --renk-koyu: var(--mavi); --ton: var(--ton-p); --cizgi: var(--cizgi-p); --ikon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27white%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cline%20x1%3D%279%27%20y1%3D%277%27%20x2%3D%2720%27%20y2%3D%277%27/%3E%3Cline%20x1%3D%279%27%20y1%3D%2712%27%20x2%3D%2720%27%20y2%3D%2712%27/%3E%3Cline%20x1%3D%279%27%20y1%3D%2717%27%20x2%3D%2720%27%20y2%3D%2717%27/%3E%3Ccircle%20cx%3D%275%27%20cy%3D%277%27%20r%3D%271%27/%3E%3Ccircle%20cx%3D%275%27%20cy%3D%2712%27%20r%3D%271%27/%3E%3Ccircle%20cx%3D%275%27%20cy%3D%2717%27%20r%3D%271%27/%3E%3C/svg%3E"); }
+
+/* Tipografi */
+h1 { font-size: 40px; line-height: 44px; font-weight: 800; letter-spacing: -1px; }
+h2 { font-size: 22px; line-height: 30px; font-weight: 800; letter-spacing: -0.2px; }
+.head-text > .muted { font-size: 13px; line-height: 18px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; }
+.satir-ad { font-size: 18px; font-weight: 700; }
+.satir-sag { font-weight: 700; color: var(--ink); }
+.sheet h2 { font-size: 24px; }
+
+/* Bölüm başlığı: renkli simge + sayaç */
+.section[data-renk] .section-head { align-items: center; }
+.section[data-renk] .section-head h2 { display: flex; align-items: center; gap: 10px; }
+.section[data-renk] .section-head h2::before {
+  content: ""; width: 32px; height: 32px; flex: none; border-radius: 10px;
+  background: var(--renk) var(--ikon) center / 18px 18px no-repeat;
+}
+.section[data-renk] .section-head > .muted {
+  background: var(--renk-koyu); color: #FFFFFF; font-size: 14px; line-height: 20px; font-weight: 700;
+  padding: 2px 10px; border-radius: 12px;
+}
+
+/* Renkli kartlar, satır çizgileri, onay kutuları, düğmeler */
+.card { border-radius: 16px; }
+.section[data-renk] .card { background: var(--ton); }
+.section[data-renk] .satir + .satir { border-top-color: var(--cizgi); }
+.section[data-renk] .chk[aria-pressed="true"] span { background: var(--renk); border-color: var(--renk); color: #FFFFFF; }
+.chk span { border-width: 2px; }
+.btn { min-height: 52px; border-radius: 14px; font-weight: 700; }
+.btn-solid { min-height: 54px; font-size: 19px; font-weight: 800; }
+.btn-outline { border-width: 2px; }
+.section[data-renk] .btn-outline, .section[data-renk] .icon-btn.kare { border-color: var(--renk); }
+.icon-btn.kare { border-width: 2px; border-radius: 14px; width: 52px; height: 52px; }
+.ekle input { min-height: 52px; border-radius: 14px; }
+.etiket { border-width: 1.5px; }
+
+/* Kalori özeti */
+.ozet { border-radius: 20px; padding: 18px; gap: 14px; }
+.buyuk { gap: 8px; }
+.buyuk strong { font-size: 56px; line-height: 58px; font-weight: 800; letter-spacing: -1.5px; }
+.buyuk span { font-size: 19px; line-height: 24px; font-weight: 600; color: var(--muted); }
+.cubuk, .cubuk div { height: 12px; border-radius: 6px; }
+.cubuk { background: var(--iz); }
+.makro { display: flex; gap: 28px; }
+.makro div { display: flex; flex-direction: column; }
+.makro b { font-size: 22px; line-height: 26px; font-weight: 800; }
+.makro span { font-size: 12px; line-height: 16px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--muted); }
+
+/* Alt sekmeler: etkin sekmede, o sekmenin renginde hap */
+.tabs { border-top-color: var(--iz); }
+.tab { height: 76px; gap: 2px; padding-top: 8px; }
+.tab-line { display: none; }
+.tab svg { width: 56px; height: 32px; padding: 4px 16px; border-radius: 16px; margin-top: 0; }
+.tab[aria-current="page"] svg { background: var(--ton-b); stroke-width: 2; }
+.tab[data-tab="antrenman"][aria-current="page"] svg { background: var(--ton-a); }
+.tab[data-tab="plan"][aria-current="page"] svg { background: var(--ton-p); }
+.tab[aria-current="page"] .tab-label { font-weight: 800; }
+#view { padding-bottom: calc(76px + env(safe-area-inset-bottom) + 24px); gap: 30px; }

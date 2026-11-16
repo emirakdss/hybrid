@@ -12,7 +12,7 @@ export function todoBolum(ad, kapsam, t, hepsi, gezgin = '') {
       <button class="icon-btn soluk" data-act="todo-sil" data-id="${x.id}" aria-label="Sil: ${esc(x.metin)}">${IKON.x}</button>
     </div>`).join('');
   return `
-  <section class="section" data-kapsam="${kapsam}" data-t="${t}">
+  <section class="section" data-renk="p" data-kapsam="${kapsam}" data-t="${t}">
     <div class="section-head"><h2>${ad}</h2>${m.length ? `<span class="muted">${m.filter((x) => x.tamam).length} / ${m.length}</span>` : ''}</div>
     ${gezgin}
     <div class="card">${satirlar || '<p class="empty">Henüz madde yok.</p>'}</div>

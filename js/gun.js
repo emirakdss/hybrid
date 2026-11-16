@@ -28,10 +28,14 @@ export function ozetKart(g, hedef) {
   const oran = taban ? Math.min(100, (yenen[0] / taban) * 100) : 0;
   return `
   <section class="card ozet">
-    <div class="satir-ara"><span class="muted">Günlük kalori</span><span class="muted">${hedef ? `hedef ${sayi(hedef)} · ` : ''}plan ${sayi(plan[0])}</span></div>
-    <div class="buyuk"><strong>${sayi(yenen[0])}</strong><span class="muted">kcal alındı</span></div>
+    <div class="buyuk"><strong>${sayi(yenen[0])}</strong><span>/ ${sayi(taban)} kcal</span></div>
     <div class="cubuk" role="img" aria-label="${sayi(taban)} kcal içinden ${sayi(yenen[0])} kcal alındı"><div style="width:${oran}%"></div></div>
-    <div class="satir-ara muted"><span>Protein <b>${sayi(yenen[1])} g</b></span><span>Karb. <b>${sayi(yenen[2])} g</b></span><span>Yağ <b>${sayi(yenen[3])} g</b></span></div>
+    <div class="makro">
+      <div><b>${sayi(yenen[1])} g</b><span>Protein</span></div>
+      <div><b>${sayi(yenen[2])} g</b><span>Karbonhidrat</span></div>
+      <div><b>${sayi(yenen[3])} g</b><span>Yağ</span></div>
+    </div>
+    <p class="muted small">${hedef ? `Hedefe göre · günün planı ${sayi(plan[0])} kcal` : 'Günün planına göre · hedef belirlenmedi'}</p>
   </section>`;
 }
 
@@ -39,7 +43,7 @@ export function ozetKart(g, hedef) {
 export function ogunBolum(t, g) {
   const ogunAd = (id) => (g.ogunler.find((o) => o.id === id) || {}).ad || 'Genel';
   return `
-  <section class="section" data-tarih="${t}">
+  <section class="section" data-renk="b" data-tarih="${t}">
     <div class="section-head"><h2>Öğünler</h2>${g.ogunler.length ? `<span class="muted">${g.ogunler.filter((o) => o.yendi).length} / ${g.ogunler.length}</span>` : ''}</div>
     <div class="card">${g.ogunler.map((o) => `
       <div class="satir">${chk(o.yendi, 'ogun-tik', o.id, `${o.ad} yendi`)}
@@ -202,7 +206,7 @@ export const ogunActs = {
 /* ---------- Günün antrenmanları ---------- */
 function antBolum(t, g) {
   return `
-  <section class="section" data-tarih="${t}">
+  <section class="section" data-renk="a" data-tarih="${t}">
     <div class="section-head"><h2>Antrenman</h2>${g.antrenman.length ? `<span class="muted">${g.antrenman.filter((a) => a.yapildi).length} / ${g.antrenman.length}</span>` : ''}</div>
     <div class="card">${g.antrenman.map((a) => `
       <div class="satir">${chk(a.yapildi, 'ant-tik', a.id, `${a.ad} yapıldı`)}
